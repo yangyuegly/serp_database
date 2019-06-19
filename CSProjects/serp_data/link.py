@@ -1,5 +1,5 @@
 class Link:
-    def __init__(query, date, time, link_name, domain_name,position,movement,is_news):
+    def __init__(self, query, date, time, link_name, domain_name,position,movement,is_news,page,title):
         self.query = query
         self.date = date
         self.time = time
@@ -8,3 +8,5 @@ class Link:
         self.position = position
         self.movement = movement
         self.is_news = is_news
+        self.page = page 
+        self.title = title 
