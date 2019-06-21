@@ -5,10 +5,7 @@ from link import Link
 import datetime
 from datetime import datetime as dt
 import urllib
-from database import insert_link
-import sys
-reload(sys)
-sys.setdefaultencoding('utf-8')
+from database import insert_link, get_query_by_text, get_sites_by_query, update_title
 
 
 #store = os.getcwd()
@@ -76,13 +73,38 @@ def batch_insert_links(datelist,query_list):
                     all_info = json.load(fr)
                     for page_num in page_list:
                         for i in range(len(all_info[page_num])):
+                            #print(date)
                             curr_url = all_info[page_num][i]['url']
                             curr_page = int(page_num[5])+1 
                             curr_domain = urllib.parse.urlparse(curr_url).netloc
                             curr_position = i + 1 
                             curr_title = all_info[page_num][i]['title']
-                            curr_link =Link(query,date,curr_time,curr_url,curr_domain,curr_position,0,0,curr_page,curr_title)
+                            curr_title = curr_title.encode('utf-8')
+                            curr_link =Link(query,date,curr_time,curr_url,curr_domain,curr_position,0,0,curr_page,str(curr_title,'utf-8'))
                             insert_link(curr_link) 
+            except FileNotFoundError:
+                print(query+date)
+                continue 
+            except Exception as e:
+                print(e)
+                exit(0)
+
+
+
+def update_title_batch(datelist,query_list):
+    for date in datelist:
+        for query in query_list:
+            try:
+                with open(os.path.join(query_results_directory, date, query + ".json"), 'r',encoding='utf-8') as fr:
+                    all_info = json.load(fr)
+                    for page_num in page_list:
+                        for i in range(len(all_info[page_num])):
+                            curr_url = all_info[page_num][i]['url']
+                            curr_title = all_info[page_num][i]['title']
+                            #print(type(curr_title))
+                            curr_title = curr_title.encode('utf-8')
+                            #print(curr_title)
+                            update_title(curr_url,curr_title) 
             except FileNotFoundError:
                 print(query+date)
                 continue 
@@ -95,12 +117,12 @@ def batch_insert_links(datelist,query_list):
 
 
 
-
-
-
 query_results_directory = '/Users/yueyang/Desktop/CSProjects/serp_data/manually_added-results'
 filepath = '/Users/yueyang/Desktop/CSProjects/serp_data/manually_added.txt'
 datelist = getDateListFromDir(query_results_directory) #get available dates from directory 
 query_list = getQueryList(filepath)
 page_list = ['page_'+str(i) for i in range(5)] #list of page numbers used as key to json file
-batch_insert_links(datelist,query_list)
+#update_title_batch(datelist[5:],query_list)
+#print(get_sites_by_query('Trump good'))
+#batch_insert_links(datelist[4:],query_list)
+#print(datelist)

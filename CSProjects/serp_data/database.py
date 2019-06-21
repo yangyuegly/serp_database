@@ -59,18 +59,44 @@ def update_obs(q, num):
         c.execute("UPDATE queries SET num_of_obs= :num_of_obs WHERE id=:id",{'num_of_obs':num, 'id':q.id})
 
 
+#for debugging utf-8 encoding issue 
+def update_title(url, title):
+    with conn:
+        c.execute("UPDATE links SET title=:title WHERE link_name=:url",{'title':title, 'url':url})
+
+
 def get_query_by_text(query_text):
         c.execute("SELECT * FROM queries WHERE query_text=:query_text",{'query_text':query_text})
         return c.fetchall()
 
 def get_link_by_query_date(date):
-        c.execute("SELECT title FROM links WHERE date=:date",{'date':date})
+        c.execute("SELECT * FROM links WHERE date=:date",{'date':date})
+        return c.fetchall()
+
+def get_sites_by_query(text):
+        c.execute("SELECT * FROM links WHERE query=:query",{'query':text})
         return c.fetchall()
 
 def remove_query_by_text(query_text):
     with conn:
         c.execute("DELETE FROM queries WHERE query_text= :query_text",{'query_text':query_text})
+
+def remove_query_by_text(query_text):
+    with conn:
+        c.execute("DELETE FROM queries WHERE query_text= :query_text",{'query_text':query_text})
+
+
+def remove_query_by_text(query_text):
+    with conn:
+        c.execute("DELETE FROM queries WHERE query_text= :query_text",{'query_text':query_text})
       
+"""return a list of position and date tuples """
+def get_ranking_by_url(url):
+    with conn:
+        c.execute("SELECT position,date FROM links WHERE link_name=:url",{'url':url})
+        return c.fetchall()
+
+
 #----test code-----
 #q_1 = Query('2019-02-22','2019-04-25',47,'Caribbean',"Bahamas")
 #insert_query(q_1)
@@ -85,6 +111,11 @@ def batch_add_queries(query_list, start_date, end_date, obs, category):
         for query_text in query_list:
                 curr_query = Query(start_date,end_date,obs,category,query_text)
                 insert_query(curr_query)
-        
-print(get_link_by_query_date('20-06-2018'))
+
+
+
+
+#print(get_sites_by_query('Trump good'))
+#print(get_ranking_by_url('https://en.wikipedia.org/wiki/Abortion_statistics_in_the_United_States'))
 #batch_add_queries(query_list,'19-06-2018','16-12-2018',174,'manually added queries 2018')
+print(get_link_by_query_date('09-10-2018'))

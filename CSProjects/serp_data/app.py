@@ -1,16 +1,12 @@
 import sqlite3
-from flask import g
+from flask import g, Flask, render_template
+app = Flask(__name__)
 
-DATABASE = 'serp_data.db' #check path
 
-def get_db():
-    db = getattr(g, '_database', None)
-    if db is None:
-        db = g._database = sqlite3.connect(DATABASE)
-    return db
 
-@app.teardown_appcontext
-def close_connection(exception):
-    db = getattr(g, '_database', None)
-    if db is not None:
-        db.close()
+@app.route('/search', methods=['GET', 'POST'])
+def search():
+    form = SearchForm()
+    if request.method == 'POST' and form.validate_on_submit():
+        return redirect((url_for('search_results', query=form.search.data)))  # or what you want
+    return render_template('search.html', form=form)
